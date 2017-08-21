@@ -1,1 +1,1 @@
-windows/electron.exe
+windows\electron.exe main.js
