@@ -57,73 +57,42 @@ body{
 	
 	var right = false;
 	var left = false;
+	var aRight = false;
+	var aLeft = false;
 	var up = false;
 	
 	var speed = 5;
 	
+	var tempList = {};
 	var entities = {};
 	entities["player"] = {x:0,y:0,xVel:0,yVel:0,frame:1};
 	
-	entities["dave"] = {x:0,y:0,xVel:0,yVel:0,frame:1};
+	for(i=1;i<2;i++){
+		entities[i] = {x:0,y:0,xVel:0,yVel:0,frame:1};
+		tempList[i]=Math.round(Math.random()*3);
+	}
 	
-	entities["steve"] = {x:0,y:0,xVel:0,yVel:0,frame:1};
+	setInterval(function(){
+		for(i in tempList)
+			tempList[i]=Math.round(Math.random()*5);
+	},750);
 	
-	var temp = Math.round(Math.random()*3);
-		console.log("Dave:"+temp);
 	setInterval(function(){
-		temp = Math.round(Math.random()*3);
-		console.log("Dave:"+temp);
-	},750);
-	setInterval(function(){
-		
-		/*
-		if(entities.player.x<entities.dave.x){
-			goLeft("dave");
+		for(i in tempList){
+			
+			if(tempList[i]==1)
+				goRight(i);
+			if(tempList[i]==2)
+				goLeft(i);
+			if(tempList[i]==3)
+				jump(i);
+				
+			if(tempList[i]==4)
+				attackRight(i);
+			if(tempList[i]==5)
+				attackLeft(i);
 		}
-		
-		if(entities.player.x>entities.dave.x){
-			goRight("dave");
-		}
-		
-		if(entities.player.y<entities.dave.y){
-			jump("dave");
-		}
-		*/
-		
-		if(temp==1){
-			goLeft("dave");
-		}
-		
-		if(temp==2){
-			goRight("dave");
-		}
-		
-		if(temp==3){
-			jump("dave");
-		}
-		
-		
-	},10);
-
-	setInterval(function(){
-		temps = Math.round(Math.random()*3);
-	},750);
-	setInterval(function(){
-		
-		if(temps==1){
-			goLeft("steve");
-		}
-		
-		if(temps==2){
-			goRight("steve");
-		}
-		
-		if(temps==3){
-			jump("steve");
-		}
-		
-		
-	},10);
+	},speed);
 	
 	//timer = setInterval(fixCanvasSize,100);
 	
@@ -132,6 +101,34 @@ body{
 		//ctx.fillRect(0,0,800,600);
 		bimg = document.getElementById("background");
 		ctx.drawImage(bimg,0,0,800,600);
+	}
+	
+	function attack(x,y,size,direction){
+		ctx.fillStyle="#FF0000";
+		ctx.fillRect(x+(size/2),y,size,size);
+		for(k in entities){
+			var v = entities[k];
+			if(v.x>x && v.x<x+size && v.y+50>y && v.y+50<y+size){
+				//delete entities[k];
+				console.log(k+" hit");
+				//delete tempList[k];
+				if(direction=="right")
+					entities[k].xVel = -5;
+				if(direction=="left")
+					entities[k].xVel = 5;
+				//entities[k].yVel = -4;
+					
+					
+			}
+		}
+	}
+	
+	function attackRight(k){
+		attack(entities[k].x-150,entities[k].y,100,"right");
+	}
+	
+	function attackLeft(k){
+		attack(entities[k].x+50,entities[k].y,100,"left");
 	}
 	
 	function step(){
@@ -148,6 +145,14 @@ body{
 			}
 			if(up == true){
 				jump("player");
+			}
+			
+			if(aRight == true){
+				attackRight("player");
+			}
+			
+			if(aLeft == true){
+				attackLeft("player");
 			}
 			
 			for(k in entities){
@@ -169,75 +174,76 @@ body{
 			entities[k].yVel=-3;
 	}
 			
-		function stepDo(x,y,xVel,yVel,frame,k){
-			img = document.getElementById("stand");
-			
-			if(y >= 425)
-				frame+=Math.abs(xVel);
-			//console.log(frame);
-			
-			if(frame>=200){
-				frame=1;
-			}
-			
-			x+=xVel;
-			y+=yVel;
-			
-			if(yVel == 0 && y==450 && xVel == 0){
-				img = document.getElementById("stand");
-				frame=1;
-			}else if(yVel !== 0 && (xVel<0.5 && xVel>-0.5)){
-				img = document.getElementById("midair");
-			}
-			
-			if(y<450){
-				yVel+=50/1000;
-			}else{
-				yVel=((yVel/2)*-1)+1;
-				y=450;
-				if(yVel>0){
-					yVel=0;
-				}
-			}
-			
-			if(xVel>0){
-				if(y==450)
-					xVel=xVel-0.05;
-				img=document.getElementById("runright"+Math.ceil(frame/50));
-			}
-			
-			if(xVel<0){
-				if(y==450)
-					xVel=xVel+0.05;
-				img=document.getElementById("runleft"+Math.ceil(frame/50));
-			}
-			
-			if(xVel<0.1 && xVel>-0.1){
-				xVel=0;
-			}
-			
-			if(x>800){
-				x=-100;
-			}
-			if(x<-100){
-				x=800;
-			}
-				
-			
-			try{
-				ctx.drawImage(img,x,y,100,100);
-				ctx.font = "10px Arial";
-				ctx.fillText(k,x+30,y+10);
-			}catch(err){
-				console.log("ERROR!");
-				console.log(img);
-				console.log(frame);
-				console.log(Math.ceil(frame/100));
-				console.log(err);
-				clearInterval(timer);
-			}
-			return {x:x,y:y,xVel:xVel,yVel:yVel,frame:frame}
+	function stepDo(x,y,xVel,yVel,frame,k){
+		img = document.getElementById("stand");
+		
+		if(y >= 425)
+			frame+=Math.abs(xVel);
+		//console.log(frame);
+		
+		if(frame>=200){
+			frame=1;
 		}
+		
+		x+=xVel;
+		y+=yVel;
+		
+		if(yVel == 0 && y==450 && xVel == 0){
+			img = document.getElementById("stand");
+			frame=1;
+		}else if(yVel !== 0 && (xVel<0.5 && xVel>-0.5)){
+			img = document.getElementById("midair");
+		}
+		
+		if(y<450){
+			yVel+=50/1000;
+		}else{
+			yVel=((yVel/2)*-1)+1;
+			y=450;
+			if(yVel>0){
+				yVel=0;
+			}
+		}
+		
+		if(xVel>0){
+			if(y==450)
+				xVel=xVel-0.05;
+			img=document.getElementById("runright"+Math.ceil(frame/50));
+		}
+		
+		if(xVel<0){
+			if(y==450)
+				xVel=xVel+0.05;
+			img=document.getElementById("runleft"+Math.ceil(frame/50));
+		}
+		
+		if(xVel<0.1 && xVel>-0.1){
+			xVel=0;
+		}
+		
+		if(x>800){
+			x=-100;
+		}
+		if(x<-100){
+			x=800;
+		}
+			
+		
+		try{
+			ctx.drawImage(img,x,y,100,100);
+			ctx.font = "10px Arial";
+			ctx.fillStyle="#000000";
+			ctx.fillText(k,x+30,y+10);
+		}catch(err){
+			console.log("ERROR!");
+			console.log(img);
+			console.log(frame);
+			console.log(Math.ceil(frame/100));
+			console.log(err);
+			clearInterval(timer);
+		}
+		return {x:x,y:y,xVel:xVel,yVel:yVel,frame:frame}
+	}
 			
 			
 	function cycle(){
@@ -310,6 +316,15 @@ body{
 		if(key == 38){
 			up=true;
 		}
+		if(key == 68){
+			//attackLeft("player");
+			aLeft = true;
+		}
+		if(key == 65){
+			//attackRight("player");
+			aRight = true;
+		}
+		
 		console.log(key);
 	});
 	
@@ -325,6 +340,14 @@ body{
 		}
 		if(key == 38){
 			up = false;
+		}
+		if(key == 68){
+			//attackLeft("player");
+			aLeft = false;
+		}
+		if(key == 65){
+			//attackRight("player");
+			aRight = false;
 		}
 	});
 	
