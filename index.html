@@ -47,6 +47,7 @@ body{
 	var temps = 0;
 	
 	var start = false;
+	var start = false;
 	
 	ctx.font = "50px Arial";
 	ctx.fillStyle="#000000";
@@ -67,6 +68,8 @@ body{
 	var aLeft = false;
 	var up = false;
 	
+	var totalEnemies = 1;
+	
 	var speed = 5;
 	
 	var tempList = {};
@@ -74,18 +77,31 @@ body{
 	entities["player"] = {x:0,y:0,xVel:0,yVel:0,frame:1,hp:100};
 	
 	for(i=1;i<2;i++){
-		entities[i] = {x:700,y:0,xVel:0,yVel:0,frame:1,hp:100};
+		entities[i] = {x:1500,y:450,xVel:0,yVel:0,frame:1,hp:100};
 		tempList[i]=Math.round(Math.random()*3);
 	}
 	
 	setInterval(function(){
 		for(i in tempList)
 			tempList[i]=Math.round(Math.random()*3);
+			
+		if(tempList.length<1){
+			
+		}
 	},750);
+	
+	function respawnAI(){
+		totalEnemies++;
+		entities[totalEnemies] = {x:1500,y:450,xVel:0,yVel:0,frame:1,hp:100};
+		tempList[totalEnemies]=Math.round(Math.random()*3);
+		
+	}
 	
 	setInterval(function(){
 		for(i in tempList){
-			
+			//if(entities[i].hp<25){
+				//tempList[i]=1;
+			//}
 			if(tempList[i]==1){
 				if(entities.player.x>entities[i].x){
 					if(Math.abs(entities.player.x-entities[i].x<300))
@@ -174,12 +190,24 @@ body{
 				if(entities[k].hp<1){
 					delete entities[k];
 				    delete tempList[k];
+				    setTimeout(function(){
+						respawnAI();
+						//respawnAI();
+					},1000);
 				}
 					
 					
 			}
 		}
 	}
+	
+	setInterval(function(){
+		for(k in entities){
+			if(entities[k].hp<100){
+				entities[k].hp++;
+			}
+		}
+	},1000);
 	
 	function attackRight(k){
 		attack(entities[k].x-150,entities[k].y,100,"right");
