@@ -44,23 +44,86 @@ body{
 	var c = document.getElementById("mainCanvas");
 	var ctx = c.getContext("2d");
 	var temp = 255;
+	var temps = 0;
 	
-	var img = document.getElementById("stand");
-	var frame = 1;
+	//var img = document.getElementById("stand");
+	//var frame = 1;
 	
-	var x = 0;
-	var y = 0;
+	//var x = 0;
+	//var y = 0;
 	
-	var yVel=0;
-	var xVel=0;
+	//var yVel=0;
+	//var xVel=0;
 	
 	var right = false;
 	var left = false;
+	var up = false;
 	
 	var speed = 5;
 	
+	var entities = {};
+	entities["player"] = {x:0,y:0,xVel:0,yVel:0,frame:1};
 	
+	entities["dave"] = {x:0,y:0,xVel:0,yVel:0,frame:1};
 	
+	entities["steve"] = {x:0,y:0,xVel:0,yVel:0,frame:1};
+	
+	var temp = Math.round(Math.random()*3);
+		console.log("Dave:"+temp);
+	setInterval(function(){
+		temp = Math.round(Math.random()*3);
+		console.log("Dave:"+temp);
+	},1000);
+	setInterval(function(){
+		
+		/*
+		if(entities.player.x<entities.dave.x){
+			goLeft("dave");
+		}
+		
+		if(entities.player.x>entities.dave.x){
+			goRight("dave");
+		}
+		
+		if(entities.player.y<entities.dave.y){
+			jump("dave");
+		}
+		*/
+		
+		if(temp==1){
+			goLeft("dave");
+		}
+		
+		if(temp==2){
+			goRight("dave");
+		}
+		
+		if(temp==3){
+			jump("dave");
+		}
+		
+		
+	},10);
+
+	setInterval(function(){
+		temps = Math.round(Math.random()*3);
+	},1000);
+	setInterval(function(){
+		
+		if(temps==1){
+			goLeft("steve");
+		}
+		
+		if(temps==2){
+			goRight("steve");
+		}
+		
+		if(temps==3){
+			jump("steve");
+		}
+		
+		
+	},10);
 	
 	//timer = setInterval(fixCanvasSize,100);
 	
@@ -75,17 +138,38 @@ body{
 			refresh();
 			ctx.fillStyle= "rgb("+0+","+temp+","+0+")";
 			//console.log(img);
-			try{
-				ctx.drawImage(img,x,y,100,100);
-			}catch(err){
-				console.log("ERROR!");
-				console.log(img);
-				console.log(frame);
-				console.log(Math.ceil(frame/100));
-				console.log(err);
-				clearInterval(timer);
+			
+			if(right == true){
+				goRight("player");
 			}
 			
+			if(left == true){
+				goLeft("player");
+			}
+			if(up == true){
+				jump("player");
+			}
+			
+			for(k in entities){
+				var v = entities[k];
+				entities[k] = stepDo(v.x,v.y,v.xVel,v.yVel,v.frame,k);
+			}
+	}
+			
+	function goRight(k){
+		if(entities[k].xVel<3)
+			entities[k].xVel += 0.2;
+	}
+	function goLeft(k){
+		if(entities[k].xVel>-3)
+			entities[k].xVel -= 0.2;
+	}
+	function jump(k){
+		if(entities[k]["y"]==450)
+			entities[k].yVel=-3;
+	}
+			
+		function stepDo(x,y,xVel,yVel,frame,k){
 			frame+=Math.abs(xVel);
 			console.log(frame);
 			
@@ -95,8 +179,6 @@ body{
 			
 			x+=xVel;
 			y+=yVel;
-			
-			
 			
 			if(yVel == 0 && xVel == 0){
 				img = document.getElementById("stand");
@@ -114,7 +196,7 @@ body{
 					yVel=0;
 				}
 			}
-					
+			
 			if(xVel>0 && y==450){
 				xVel=xVel-0.05;
 				img=document.getElementById("runright"+Math.ceil(frame/50));
@@ -135,7 +217,22 @@ body{
 			if(x<-100){
 				x=800;
 			}
-	}
+			
+			try{
+				ctx.drawImage(img,x,y,100,100);
+				ctx.font = "10px Arial";
+				ctx.fillText(k,x+30,y+10);
+			}catch(err){
+				console.log("ERROR!");
+				console.log(img);
+				console.log(frame);
+				console.log(Math.ceil(frame/100));
+				console.log(err);
+				clearInterval(timer);
+			}
+			return {x:x,y:y,xVel:xVel,yVel:yVel,frame:frame}
+		}
+			
 			
 	function cycle(){
 		setTimeout(function(){
@@ -146,15 +243,9 @@ body{
 	
 	cycle();
 			
-	velCheck = setInterval(function(){
-		if(right == true && xVel<3){
-			xVel += 0.2;
-		}
+	//velCheck = setInterval(function(){
 		
-		if(left == true && xVel>-3){
-			xVel += -0.2;
-		}
-	},1);
+	//},1);
 	
 	window.onresize = function(event) {
 		fixCanvasSize();
@@ -210,8 +301,8 @@ body{
 			//xVel=-10;
 			left = true;
 		}
-		if(key == 38 && y==450){
-			yVel=-3;
+		if(key == 38){
+			up=true;
 		}
 		console.log(key);
 	});
@@ -227,7 +318,7 @@ body{
 			left = false;
 		}
 		if(key == 38){
-			yVel+=1;
+			up = false;
 		}
 	});
 	
