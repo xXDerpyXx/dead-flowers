@@ -46,6 +46,12 @@ body{
 	var temp = 255;
 	var temps = 0;
 	
+	var start = false;
+	
+	ctx.font = "50px Arial";
+	ctx.fillStyle="#000000";
+	ctx.fillText("click to start!",300,250);
+	
 	//var img = document.getElementById("stand");
 	//var frame = 1;
 	
@@ -309,7 +315,7 @@ body{
 		},speed)
 	}
 	
-	cycle();
+	
 			
 	//velCheck = setInterval(function(){
 		
@@ -319,6 +325,11 @@ body{
 		fixCanvasSize();
 	};
 
+	window.onclick = function(event){
+		if(start == false)
+			cycle();
+		start = true;
+	};
 	
 	function fixCanvasSize(){
 		var width = window.innerWidth
