@@ -74,6 +74,7 @@ body{
 	
 	var tempList = {};
 	var entities = {};
+	var projectiles = {};
 	entities["player"] = {x:0,y:0,xVel:0,yVel:0,frame:1,hp:100};
 	
 	for(i=1;i<2;i++){
@@ -163,6 +164,25 @@ body{
 	
 	//timer = setInterval(fixCanvasSize,100);
 	
+	function projectile(obj,k){
+		if(obj != undefined){
+			obj.x = obj.x+obj.rateX;
+			obj.y = obj.y+obj.rateY;
+			obj.timeLeft--;
+			if(obj.timeLeft<1){
+				delete projectiles[k];
+				obj=undefined;
+			}else{
+				ctx.drawImage(obj.img,obj.x,obj.y);
+			}
+			//projectile[k].x = x;
+			//projectile[k].y = y;
+			//projectile[k].timeLeft = timeLeft;
+			console.log(obj);
+			return obj;
+		}
+	}
+	
 	function refresh(){
 		//ctx.fillStyle="#FFFFFF";
 		//ctx.fillRect(0,0,800,600);
@@ -211,10 +231,14 @@ body{
 	
 	function attackRight(k){
 		attack(entities[k].x-150,entities[k].y,100,"right");
+		//var d = new Date();
+		//projectiles[d.getMilliseconds()] = {x:entities[k].x,y:entities[k].y,rateX:-10,rateY:0,timeLeft:100,img:document.getElementById("stand")};
 	}
 	
 	function attackLeft(k){
 		attack(entities[k].x+50,entities[k].y,100,"left");
+		//var d = new Date();
+		//projectiles[d.getMilliseconds()] = {x:entities[k].x,y:entities[k].y,rateX:10,rateY:0,timeLeft:100,img:document.getElementById("stand")};
 	}
 	
 	function step(){
@@ -244,6 +268,10 @@ body{
 			for(k in entities){
 				var v = entities[k];
 				entities[k] = stepDo(v.x,v.y,v.xVel,v.yVel,v.frame,k,v.hp);
+			}
+			
+			for(k in projectiles){
+				projectiles[k] = projectile(projectiles[k],k);
 			}
 	}
 			
