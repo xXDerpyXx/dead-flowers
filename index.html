@@ -65,32 +65,77 @@ body{
 	
 	var tempList = {};
 	var entities = {};
-	entities["player"] = {x:0,y:0,xVel:0,yVel:0,frame:1};
+	entities["player"] = {x:0,y:0,xVel:0,yVel:0,frame:1,hp:100};
 	
 	for(i=1;i<2;i++){
-		entities[i] = {x:0,y:0,xVel:0,yVel:0,frame:1};
+		entities[i] = {x:700,y:0,xVel:0,yVel:0,frame:1,hp:100};
 		tempList[i]=Math.round(Math.random()*3);
 	}
 	
 	setInterval(function(){
 		for(i in tempList)
-			tempList[i]=Math.round(Math.random()*5);
+			tempList[i]=Math.round(Math.random()*3);
 	},750);
 	
 	setInterval(function(){
 		for(i in tempList){
 			
-			if(tempList[i]==1)
-				goRight(i);
-			if(tempList[i]==2)
-				goLeft(i);
-			if(tempList[i]==3)
+			if(tempList[i]==1){
+				if(entities.player.x>entities[i].x){
+					if(Math.abs(entities.player.x-entities[i].x<300))
+						goLeft(i);
+					else
+						goRight(i);
+				}else{
+					if(Math.abs(entities.player.x-entities[i].x<300))
+						goRight(i);
+					else
+						goLeft(i);
+				}
+			}
+			
+			if(tempList[i]==2){
+				if(entities.player.x<entities[i].x){
+					if(Math.abs(entities.player.x-entities[i].x>100)){
+						goLeft(i);
+					}else{
+						attackRight(i);
+						goLeft(i);
+					}
+				}else{
+					if(Math.abs(entities.player.x-entities[i].x>100)){
+						goRight(i);
+					}else{
+						attackLeft(i);
+						goLeft(i);
+					}
+					
+				}
+			}
+			
+			if(tempList[i]==3){
 				jump(i);
-				
+				if(entities.player.x<entities[i].x){
+					if(Math.abs(entities.player.x-entities[i].x>100)){
+						goLeft(i);
+					}else{
+						attackRight(i);
+					}
+				}else{
+					if(Math.abs(entities.player.x-entities[i].x>100)){
+						goRight(i);
+					}else{
+						attackLeft(i);
+					}
+					
+				}
+			}
+			/*
 			if(tempList[i]==4)
 				attackRight(i);
 			if(tempList[i]==5)
 				attackLeft(i);
+			*/
 		}
 	},speed);
 	
@@ -109,14 +154,21 @@ body{
 		for(k in entities){
 			var v = entities[k];
 			if(v.x>x && v.x<x+size && v.y+50>y && v.y+50<y+size){
-				//delete entities[k];
+				
 				console.log(k+" hit");
-				//delete tempList[k];
+				
 				if(direction=="right")
 					entities[k].xVel = -5;
 				if(direction=="left")
 					entities[k].xVel = 5;
 				//entities[k].yVel = -4;
+				
+				entities[k].hp-=1;
+				
+				if(entities[k].hp<1){
+					delete entities[k];
+				    delete tempList[k];
+				}
 					
 					
 			}
@@ -157,7 +209,7 @@ body{
 			
 			for(k in entities){
 				var v = entities[k];
-				entities[k] = stepDo(v.x,v.y,v.xVel,v.yVel,v.frame,k);
+				entities[k] = stepDo(v.x,v.y,v.xVel,v.yVel,v.frame,k,v.hp);
 			}
 	}
 			
@@ -174,7 +226,7 @@ body{
 			entities[k].yVel=-3;
 	}
 			
-	function stepDo(x,y,xVel,yVel,frame,k){
+	function stepDo(x,y,xVel,yVel,frame,k,hp){
 		img = document.getElementById("stand");
 		
 		if(y >= 425)
@@ -234,6 +286,10 @@ body{
 			ctx.font = "10px Arial";
 			ctx.fillStyle="#000000";
 			ctx.fillText(k,x+30,y+10);
+			ctx.fillStyle="#000000";
+			ctx.fillRect(x,y+17,100,8);
+			ctx.fillStyle="#FF0000";
+			ctx.fillRect(x,y+16,hp,10);
 		}catch(err){
 			console.log("ERROR!");
 			console.log(img);
@@ -242,7 +298,7 @@ body{
 			console.log(err);
 			clearInterval(timer);
 		}
-		return {x:x,y:y,xVel:xVel,yVel:yVel,frame:frame}
+		return {x:x,y:y,xVel:xVel,yVel:yVel,frame:frame,hp:hp}
 	}
 			
 			
