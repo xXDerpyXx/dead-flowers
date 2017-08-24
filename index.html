@@ -230,15 +230,13 @@ body{
 	},1000);
 	
 	function attackRight(k){
-		attack(entities[k].x-150,entities[k].y,100,"right");
-		//var d = new Date();
-		//projectiles[d.getMilliseconds()] = {x:entities[k].x,y:entities[k].y,rateX:-10,rateY:0,timeLeft:100,img:document.getElementById("stand")};
+		if(entities[k] != null)
+			attack(entities[k].x-150,entities[k].y,100,"right");
 	}
 	
 	function attackLeft(k){
-		attack(entities[k].x+50,entities[k].y,100,"left");
-		//var d = new Date();
-		//projectiles[d.getMilliseconds()] = {x:entities[k].x,y:entities[k].y,rateX:10,rateY:0,timeLeft:100,img:document.getElementById("stand")};
+		if(entities[k] != null)
+			attack(entities[k].x+50,entities[k].y,100,"left");
 	}
 	
 	function step(){
@@ -276,16 +274,19 @@ body{
 	}
 			
 	function goRight(k){
-		if(entities[k].xVel<3)
-			entities[k].xVel += 0.2;
+		if(entities[k] != null)
+			if(entities[k].xVel<3)
+				entities[k].xVel += 0.2;
 	}
 	function goLeft(k){
-		if(entities[k].xVel>-3)
-			entities[k].xVel -= 0.2;
+		if(entities[k] != null)
+			if(entities[k].xVel>-3)
+				entities[k].xVel -= 0.2;
 	}
 	function jump(k){
-		if(entities[k]["y"]==450)
-			entities[k].yVel=-3;
+		if(entities[k] != null)
+			if(entities[k]["y"]==450)
+				entities[k].yVel=-3;
 	}
 			
 	function stepDo(x,y,xVel,yVel,frame,k,hp){
